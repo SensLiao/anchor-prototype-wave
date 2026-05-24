@@ -1,0 +1,20 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Python (used by scripts/)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Skill runtime output (waves get generated outside the skill dir, but just in case)
+ui-lab/
+audits/manifest.json.bak

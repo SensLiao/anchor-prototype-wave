@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{ANCHOR_NAME} Prototypes · {TRACK_OR_PROGRAM}</title>
+<!--
+  Master Gallery Template (anchor-prototype-wave skill)
+  ----------------------------------------------------
+  Replace placeholders: {ANCHOR_NAME}, {TRACK_OR_PROGRAM}, {DATE},
+  {ACCENT_VALUE}, {FONT_PRIMARY}, {FONT_MONO}, stat values, surface cards,
+  footer links.
+
+  This gallery itself uses the anchor's visual chassis — proves the chassis
+  at ensemble scale before any single-surface promotion.
+-->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family={FONT_PRIMARY}:wght@400;500;600;700&family={FONT_MONO}:wght@400;500&display=swap');
+
+  :root {
+    /* Surface */
+    --page-bg: {SURFACE_PAGE};
+    --card-bg: {SURFACE_CARD};
+    --sunken-bg: {SURFACE_SUNKEN};
+    --muted-bg: {SURFACE_MUTED};
+
+    /* Text */
+    --text-primary: {TEXT_PRIMARY};
+    --text-secondary: {TEXT_SECONDARY};
+    --text-tertiary: {TEXT_TERTIARY};
+    --text-mono-label: {TEXT_MONO_LABEL};
+
+    /* Border */
+    --border-hairline: {BORDER_HAIRLINE};
+    --border-strong: {BORDER_STRONG};
+    --border-focus: {BORDER_FOCUS};
+
+    /* Accent (single mono) */
+    --accent: {ACCENT_VALUE};
+
+    /* Status (semantic, restrained) */
+    --status-amber: {STATUS_AMBER};
+    --status-red: {STATUS_RED};
+
+    /* Shadow */
+    --shadow-micro: 0 1px 2px rgba(23, 23, 23, 0.04);
+
+    /* Radius */
+    --radius-pill: 999px;
+    --radius-card: {RADIUS_CARD};
+    --radius-chip: {RADIUS_CHIP};
+
+    /* Spacing */
+    --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+    --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+    --space-12: 48px;
+
+    /* Typography */
+    --font-sans: '{FONT_PRIMARY}', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: '{FONT_MONO}', ui-monospace, SFMono-Regular, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    background: var(--page-bg);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    /* Optional dot-grid backdrop */
+    background-image: radial-gradient(circle, rgba(23,23,23,0.04) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  a { color: inherit; text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-mono-label);
+  }
+
+  .shell {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: var(--space-12) var(--space-8);
+  }
+
+  /* Anchor header */
+  .anchor-header {
+    margin-bottom: var(--space-10);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--border-hairline);
+  }
+  .breadcrumb {
+    display: flex; align-items: center; gap: var(--space-2);
+    font-size: 12px; color: var(--text-tertiary); margin-bottom: var(--space-4);
+  }
+  .breadcrumb a:hover { color: var(--text-primary); }
+  .breadcrumb-sep { color: var(--text-tertiary); }
+  .anchor-title {
+    font-size: 36px; font-weight: 600; letter-spacing: -0.02em;
+    color: var(--text-primary); margin: 0 0 var(--space-3) 0;
+  }
+  .anchor-subtitle {
+    font-size: 16px; color: var(--text-secondary);
+    margin: 0 0 var(--space-6) 0; max-width: 800px;
+  }
+
+  /* Version stack strip */
+  .version-stack {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3); margin-top: var(--space-6);
+  }
+  .v-tile {
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-card);
+    padding: var(--space-4) var(--space-5);
+    background: var(--card-bg);
+  }
+  .v-tile.v-active { border-color: var(--accent); }
+  .v-tile.v-future {
+    background: var(--sunken-bg);
+    border-style: dashed;
+    border-color: var(--border-strong);
+  }
+  .v-tile-version { font-size: 18px; font-weight: 600; margin-bottom: var(--space-1); }
+  .v-tile-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+  .v-tile-status {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em;
+    margin-top: var(--space-3); color: var(--text-tertiary);
+  }
+
+  /* Stats strip */
+  .stats-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-10);
+    padding: var(--space-5) var(--space-6);
+    background: var(--card-bg);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-card);
+  }
+  .stat-cell { display: flex; flex-direction: column; gap: var(--space-1); }
+  .stat-value {
+    font-family: var(--font-mono); font-size: 22px; font-weight: 600;
+    color: var(--text-primary); letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-label {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-tertiary);
+  }
+  .stat-sublabel { font-size: 11px; color: var(--text-tertiary); }
+
+  /* Section */
+  .section { margin-bottom: var(--space-12); }
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: var(--space-5); padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-hairline);
+  }
+  .section-title {
+    font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin: 0;
+    display: flex; align-items: center; gap: var(--space-3);
+  }
+  .section-title .meta {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-tertiary);
+  }
+  .section-desc { font-size: 13px; color: var(--text-secondary); max-width: 640px; }
+
+  /* Grid */
+  .card-grid { display: grid; gap: var(--space-4); }
+  .card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 1024px) {
+    .card-grid.cols-3 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 720px) {
+    .card-grid.cols-2, .card-grid.cols-3 { grid-template-columns: 1fr; }
+  }
+
+  /* Prototype card */
+  .proto-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-card);
+    padding: var(--space-5);
+    transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+    display: flex; flex-direction: column; gap: var(--space-3);
+    position: relative; overflow: hidden;
+  }
+  .proto-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-micro);
+  }
+  .proto-card.is-creative::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 2px; background: var(--accent);
+  }
+  .proto-card.is-mature::before {
+    content: ''; position: absolute; top: 0; left: 0; bottom: 0;
+    width: 2px; background: var(--accent); opacity: 0.4;
+  }
+  .proto-card.is-marquee {
+    grid-column: 1 / -1;
+    border: 1px solid var(--accent);
+  }
+  .proto-card.is-marquee::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--accent);
+  }
+
+  .pc-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: var(--space-3);
+  }
+  .pc-id {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+    letter-spacing: 0.08em; color: var(--text-mono-label);
+  }
+  .pc-mode-pill {
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-pill); padding: 2px 8px;
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em;
+    color: var(--text-tertiary); background: var(--sunken-bg);
+    white-space: nowrap;
+  }
+  .pc-mode-pill.creative {
+    border-color: var(--accent); color: var(--accent);
+    background: var(--card-bg); font-weight: 500;
+  }
+  .pc-title {
+    font-size: 16px; font-weight: 600; margin: 0; line-height: 1.3;
+    color: var(--text-primary);
+  }
+  .pc-route {
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--text-tertiary); margin: 0;
+  }
+  .pc-desc {
+    font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin: 0;
+  }
+  .pc-grades {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-1);
+    padding: var(--space-3) 0 var(--space-2);
+    border-top: 1px dashed var(--border-hairline); margin-top: var(--space-1);
+  }
+  .grade-cell { text-align: center; }
+  .grade-num {
+    font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+    color: var(--text-primary);
+  }
+  .grade-label {
+    font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--text-tertiary);
+    margin-top: 2px; line-height: 1.2;
+  }
+  .pc-actions { display: flex; gap: var(--space-2); margin-top: var(--space-3); }
+  .btn {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    padding: 6px 12px;
+    border-radius: var(--radius-chip);
+    border: 1px solid var(--border-hairline);
+    background: var(--card-bg); color: var(--text-primary);
+    font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+    cursor: pointer; text-decoration: none;
+    transition: background 120ms ease, border-color 120ms ease;
+  }
+  .btn:hover { background: var(--muted-bg); border-color: var(--border-strong); text-decoration: none; }
+  .btn.primary { background: var(--accent); color: #ffffff; border-color: var(--accent); }
+  .btn.primary:hover { background: rgba(23, 23, 23, 0.88); }
+
+  /* Footer */
+  .anchor-footer {
+    margin-top: var(--space-12); padding-top: var(--space-6);
+    border-top: 1px solid var(--border-hairline);
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--space-6); font-size: 12px; color: var(--text-secondary);
+  }
+  .footer-col h4 {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-mono-label);
+    margin: 0 0 var(--space-3) 0;
+  }
+  .footer-col ul { list-style: none; margin: 0; padding: 0; }
+  .footer-col li { margin-bottom: var(--space-2); line-height: 1.5; }
+  .footer-col a { color: var(--text-secondary); }
+  .footer-col a:hover { color: var(--text-primary); }
+  .footer-disclaimer {
+    margin-top: var(--space-8); padding-top: var(--space-4);
+    border-top: 1px dashed var(--border-hairline);
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.04em;
+    color: var(--text-tertiary); text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .proto-card { transition: none; }
+    .proto-card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<main class="shell">
+
+  <!-- ============ Anchor header ============ -->
+  <header class="anchor-header">
+    <nav class="breadcrumb">
+      <span>{TRACK_OR_PROGRAM}</span>
+      <span class="breadcrumb-sep">›</span>
+      <span>{LAB_NAME}</span>
+      <span class="breadcrumb-sep">›</span>
+      <span>{ANCHOR_NAME}</span>
+      <span class="breadcrumb-sep">›</span>
+      <span style="color:var(--text-primary)">Prototype Gallery</span>
+    </nav>
+
+    <h1 class="anchor-title">{ANCHOR_NAME} Prototype Gallery</h1>
+    <p class="anchor-subtitle">
+      {ONE_PARAGRAPH_SUBTITLE_DESCRIBING_THE_CHASSIS_AND_SCOPE}
+      All mocks built against the {ANCHOR_NAME} chassis ({FONT_PRIMARY} /
+      radius {RADIUS_CARD} / hairline borders / single mono accent
+      <code style="font-family:var(--font-mono)">{ACCENT_VALUE}</code> / no
+      glass / no aurora / no glow), aligned to MVP function inventory.
+      This gallery is the entry point for visual review before Gate 12.
+    </p>
+
+    <!-- v1 / v2 / v3 stack -->
+    <div class="version-stack">
+      <div class="v-tile">
+        <div class="mono-label">Tier 0 · Production</div>
+        <div class="v-tile-version">v1</div>
+        <div class="v-tile-desc">{V1_DESCRIPTION}</div>
+        <div class="v-tile-status">LIVE</div>
+      </div>
+      <div class="v-tile v-active">
+        <div class="mono-label">Tier 1 · Anchor</div>
+        <div class="v-tile-version">v2</div>
+        <div class="v-tile-desc">{V2_DESCRIPTION}</div>
+        <div class="v-tile-status">ANCHORED {DATE}</div>
+      </div>
+      <div class="v-tile v-future">
+        <div class="mono-label">Tier 2-4 · Future</div>
+        <div class="v-tile-version">v3</div>
+        <div class="v-tile-desc">{V3_DESCRIPTION}</div>
+        <div class="v-tile-status">{V3_EST_DATE}</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ Stats strip ============ -->
+  <div class="stats-strip">
+    <div class="stat-cell">
+      <div class="stat-value">{PROTOTYPE_COUNT}</div>
+      <div class="stat-label">Prototypes</div>
+      <div class="stat-sublabel">{PROTOTYPE_BREAKDOWN}</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-value">{HTML_LINE_TOTAL}</div>
+      <div class="stat-label">HTML Lines</div>
+      <div class="stat-sublabel">self-contained · 0 runtime deps</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-value">{MODE_COUNT}</div>
+      <div class="stat-label">Mode Variants</div>
+      <div class="stat-sublabel">{MODE_BREAKDOWN}</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-value">{AVG_GRADE} / 10</div>
+      <div class="stat-label">Avg Self-Grade</div>
+      <div class="stat-sublabel">{REVIEW_NOTE}</div>
+    </div>
+  </div>
+
+  <!-- ============ Foundation Elements section ============ -->
+  <section class="section">
+    <header class="section-head">
+      <h2 class="section-title">
+        Foundation Elements
+        <span class="meta">Stage 2.1 · {ELEMENT_COUNT} elements</span>
+      </h2>
+      <span class="mono-label">research-only · element-contract-index v1</span>
+    </header>
+    <p class="section-desc" style="margin-bottom:var(--space-5)">
+      Atomic and structural elements rendered with full state matrices against
+      the {ANCHOR_NAME} chassis. Mature foundation — innovation factor 5-7.
+    </p>
+
+    <div class="card-grid cols-2">
+      <!-- Repeat per element: -->
+      <article class="proto-card is-mature">
+        <div class="pc-head">
+          <span class="pc-id">ELEMENT · {NN}</span>
+          <span class="pc-mode-pill">foundation</span>
+        </div>
+        <h3 class="pc-title">{ELEMENT_TITLE}</h3>
+        <p class="pc-route">{ELEMENT_PATH} · {LINES} lines</p>
+        <p class="pc-desc">{ELEMENT_DESCRIPTION}</p>
+        <div class="pc-grades">
+          <div class="grade-cell"><div class="grade-num">{G1}</div><div class="grade-label">Chassis</div></div>
+          <div class="grade-cell"><div class="grade-num">{G2}</div><div class="grade-label">MVP</div></div>
+          <div class="grade-cell"><div class="grade-num">{G3}</div><div class="grade-label">Mode</div></div>
+          <div class="grade-cell"><div class="grade-num">{G4}</div><div class="grade-label">Laws UX</div></div>
+          <div class="grade-cell"><div class="grade-num">{G5}</div><div class="grade-label">Innov.</div></div>
+        </div>
+        <div class="pc-actions">
+          <a class="btn primary" href="{ELEMENT_HTML_PATH}">Open Prototype →</a>
+          <a class="btn" href="{ELEMENT_WRITEUP_PATH}">Writeup</a>
+        </div>
+      </article>
+      <!-- /per element -->
+    </div>
+  </section>
+
+  <!-- ============ Surface Prototypes section ============ -->
+  <section class="section">
+    <header class="section-head">
+      <h2 class="section-title">
+        Surface Prototypes
+        <span class="meta">Stage 3 · {SURFACE_COUNT} surfaces · {MARQUEE_COUNT} marquee</span>
+      </h2>
+      <span class="mono-label">hi-fi · awaiting Gate 12</span>
+    </header>
+
+    <div class="card-grid cols-3">
+      <!-- Marquee surface (full-width) -->
+      <article class="proto-card is-marquee">
+        <div class="pc-head">
+          <span class="pc-id">SURFACE · MARQUEE</span>
+          <span class="pc-mode-pill creative">{PREMIUM_MODE_NAME}</span>
+        </div>
+        <h3 class="pc-title">{MARQUEE_TITLE}</h3>
+        <p class="pc-route">{MARQUEE_PATH} · {LINES} lines</p>
+        <p class="pc-desc">{MARQUEE_DESCRIPTION}</p>
+        <div class="pc-grades">
+          <div class="grade-cell"><div class="grade-num">{G1}</div><div class="grade-label">Chassis</div></div>
+          <div class="grade-cell"><div class="grade-num">{G2}</div><div class="grade-label">MVP</div></div>
+          <div class="grade-cell"><div class="grade-num">{G3}</div><div class="grade-label">Mode</div></div>
+          <div class="grade-cell"><div class="grade-num">{G4}</div><div class="grade-label">Laws UX</div></div>
+          <div class="grade-cell"><div class="grade-num">{G5}</div><div class="grade-label">Innov.</div></div>
+        </div>
+        <div class="pc-actions">
+          <a class="btn primary" href="{MARQUEE_HTML_PATH}">Open Prototype →</a>
+          <a class="btn" href="{MARQUEE_WRITEUP_PATH}">Writeup</a>
+        </div>
+      </article>
+
+      <!-- Creative surfaces (top-border 2px accent) -->
+      <article class="proto-card is-creative">
+        <!-- repeat structure: pc-head / pc-title / pc-route / pc-desc / pc-grades / pc-actions -->
+      </article>
+
+      <!-- Mature surfaces (left-border 2px 40% accent) -->
+      <article class="proto-card is-mature">
+        <!-- repeat structure -->
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ Cross-AI Review section ============ -->
+  <section class="section">
+    <header class="section-head">
+      <h2 class="section-title">
+        Cross-AI Review
+        <span class="meta">Codex CLI · GPT-{X} · {DATE}</span>
+      </h2>
+      <span class="mono-label">outside red team · {SURFACE_COUNT_REVIEWED} surfaces reviewed</span>
+    </header>
+    <p class="section-desc" style="margin-bottom:var(--space-5)">
+      Cross-AI red team review by Codex CLI on {DATE}. Not a restatement of
+      Claude's self-grade — outside critique with specific DOM patterns,
+      frontier product references, and top 3 priority recommendations across
+      all surfaces. Used as input for Stage 4 visual composition pkg.
+    </p>
+    <div class="card-grid cols-2">
+      <article class="proto-card is-mature">
+        <div class="pc-head">
+          <span class="pc-id">REVIEW · CODEX</span>
+          <span class="pc-mode-pill">cross-ai</span>
+        </div>
+        <h3 class="pc-title">{CODEX_REVIEW_TITLE}</h3>
+        <p class="pc-route">{CODEX_REVIEW_PATH} · {LINES} lines</p>
+        <p class="pc-desc">{CODEX_REVIEW_SUMMARY}</p>
+        <div class="pc-actions">
+          <a class="btn primary" href="{CODEX_REVIEW_PATH}">Open Review →</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ Footer ============ -->
+  <footer class="anchor-footer">
+    <div class="footer-col">
+      <h4>Anchor Docs</h4>
+      <ul>
+        <li><a href="{ANCHOR_DOC_PATH}">{ANCHOR_NAME} Anchor</a></li>
+        <li><a href="{CHASSIS_WRITEUP_PATH}">Visual Chassis Writeup</a></li>
+        <li><a href="{V3_AMENDMENT_PATH}">v3 Strategic Amendment</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Roadmap & Strategy</h4>
+      <ul>
+        <li><a href="{ROADMAP_PATH}">Master Roadmap</a></li>
+        <li><a href="{QUALITY_GATE_PATH}">12-Gate Quality Audit</a></li>
+        <li><a href="{BOUNDARIES_PATH}">Boundary Rules</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>{MODE_FAMILY_NAME}</h4>
+      <ul>
+        <li><a href="{MODE_1_PATH}">{MODE_1_NAME}</a></li>
+        <li><a href="{MODE_2_PATH}">{MODE_2_NAME}</a></li>
+        <li><a href="{MODE_N_PATH}">{MODE_N_NAME}</a></li>
+        <li><a href="{PREMIUM_MODE_PATH}">{PREMIUM_MODE_NAME} (PREMIUM)</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <p class="footer-disclaimer">
+    {ANCHOR_NAME} anchor status ≠ production merge. Gate 12 (user approval)
+    is the only merge channel. This gallery is research output.
+  </p>
+
+</main>
+
+</body>
+</html>
