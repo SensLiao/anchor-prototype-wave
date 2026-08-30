@@ -1,172 +1,84 @@
-# anchor-prototype-wave
+<div align="right"><a href="README.zh-CN.md">简体中文</a></div>
 
-A [Claude Code](https://docs.claude.com/claude-code) skill that turns a locked
-visual anchor + a page list into a parallel-subagent wave of hi-fi HTML
-prototype surfaces, each scored by deterministic gates + an LLM grader +
-optional cross-AI review.
+<p align="center"><img src="docs/hero.png" alt="anchor-prototype-wave banner" width="100%"></p>
 
-Public/reporting name: **Track B Visual Research Run**. Path/skill name stays
-`anchor-prototype-wave` for prompt and routing compatibility.
+<p align="center"><b>Lock one visual anchor, fan out parallel high-fidelity pages, gate every one.</b></p>
 
----
+<p align="center">
+  <img src="https://img.shields.io/badge/Claude_Code-Skill-f472b6?style=flat-square" alt="Claude Code Skill">
+  <img src="https://img.shields.io/badge/version-3.0.0-f472b6?style=flat-square" alt="Version 3.0.0">
+  <img src="https://img.shields.io/badge/status-stable-f472b6?style=flat-square" alt="Status: stable">
+  <img src="https://img.shields.io/badge/pipeline-14_stages-f472b6?style=flat-square" alt="14-stage pipeline">
+  <img src="https://img.shields.io/badge/Python-3-3776ab?style=flat-square" alt="Python 3">
+  <img src="https://img.shields.io/badge/License-MIT-2dd4bf?style=flat-square" alt="License: MIT">
+</p>
 
-## What it does
+## Overview
 
-You give the skill three things:
+`anchor-prototype-wave` is a Claude Code skill that turns one locked visual anchor plus a list of pages into a full high-fidelity HTML prototype wave in a single run. It fans out parallel per-surface subagents, then gates each surface with deterministic validators, an LLM grader, and cross-model (Codex) review — retrying failures before aggregating a master gallery. It is built for designers and engineers who need many pages that stay faithful to one reference, without hand-checking each page for drift or leftover boilerplate.
 
-1. **A visual anchor** — typography, radius scale, hairline, accent color,
-   banned tokens, status/surface/text colors, spacing scale, micro shadow.
-2. **A page list** — slug, title, route, group, status hint, risk hint, and
-   optional content brief for each surface.
-3. **An output directory** — defaults to
-   `ui-lab/<date>-<anchor-slug>-anchor-prototypes/`.
+**Key terms** (for a cold reader):
 
-The skill then runs end-to-end:
+- **Surface** — one screen/page of the prototype.
+- **Anchor** — the locked visual reference every surface must match.
+- **Scaffold leak** — placeholder or boilerplate that slips into a finished page.
 
-- Spawns up to 10 parallel surface subagents (mature → Sonnet,
-  creative/marquee → Opus) under strict write-scope (`<slug>/index.html` only)
-- Runs deterministic validators (scaffold leak, decorative gradient, pill
-  mono drift, morphology, forbidden write path, accessibility minimum,
-  schema validity)
-- Runs an LLM grader filling 6 soft-score dimensions
-- Computes maturity-aware composite + verdict
-  (`PASS_9PLUS | FIX_NEEDED | REDO | ESCALATE_HUMAN`)
-- Triggers cross-AI review (Codex via `codex-dispatch`) on REDO / FIX_NEEDED
-  / known-risk surfaces, plus 15% sampling on PASS_9PLUS
-- Loops fix-on-fail up to 3 retries per failing surface, then escalates
-- Aggregates a master gallery `index.html` mirroring the v2 layout
-- Writes manifest, closeout, and updates `references/failure-patterns.md`
-  with any new regression cases
+## ✨ Highlights
 
-Full spec: see [SKILL.md](SKILL.md).
-Version history: see [CHANGELOG.md](CHANGELOG.md).
+- **A 14-stage pipeline (Stage 0–13)** that carries a wave from locked anchor to aggregated gallery in one run.
+- **Parallel surface subagents**, batched ≤10 and auto-splitting beyond that, so large page lists fan out without manual chunking.
+- **A deterministic validator** with 9 checks that aggregate into 5 hard gates — the objective, non-LLM floor every surface must clear.
+- **6 weighted soft dimensions** with maturity-aware score floors, resolving to four verdicts: `PASS_9PLUS`, `FIX_NEEDED`, `REDO`, `ESCALATE_HUMAN`.
+- **A fix-on-fail loop** capped at 3 retries per surface, so failures are repaired in place rather than silently shipped.
+- **Cross-model review** over all failures plus a 15% sample of passes, fully model-agnostic — the models are chosen by environment variables.
+- **12 surface-morphology types and 10 enumerated anti-patterns** that anchor the grading vocabulary and catch scaffold leaks.
 
----
+## 🏗 How it works
 
-## Install
+The wave runs as one deterministic flow:
 
-This skill orchestrates other Claude Code skills (it does **not** bundle their
-source). Required + recommended dependencies are documented in
-[references/skills-dependencies.md](references/skills-dependencies.md).
+1. **Lock the anchor** and expand the page list into individual surfaces.
+2. **Fan out** parallel per-surface subagents (batched ≤10, auto-splitting beyond that).
+3. **Validate** each surface against 9 deterministic checks aggregating into 5 hard gates.
+4. **Grade** the 6 weighted soft dimensions with maturity-aware floors, producing one of four verdicts.
+5. **Fix on fail**, retrying a surface up to 3 times.
+6. **Cross-model review** every failure plus a 15% sample of passes.
+7. **Aggregate** the surviving surfaces into a master gallery.
 
-### Option A — copy into a project's local `.claude/skills/`
+## 🔗 How it fits with prototyping-ui-directions
+
+[`prototyping-ui-directions`](https://github.com/SensLiao/prototyping-ui-directions) is the upstream counterpart: it discovers the design direction from a fuzzy idea and a few references. `anchor-prototype-wave` then takes the chosen direction as its locked anchor and mass-produces the high-fidelity pages from it.
+
+## 🧰 Tech stack
+
+- **Skill spec** — a single Markdown skill definition.
+- **Scripts** — two Python 3 standard-library scripts (about 640 lines, no third-party dependencies).
+- **Companion skill** — `codex-dispatch` (for cross-model review).
+
+## 🚀 Getting started
+
+Install the skill either into a single project or globally for every project:
 
 ```bash
-git clone https://github.com/SensLiao/anchor-prototype-wave.git \
-  .claude/skills/anchor-prototype-wave
+# Project-scoped install
+git clone https://github.com/SensLiao/anchor-prototype-wave .claude/skills/anchor-prototype-wave
+
+# …or global install
+git clone https://github.com/SensLiao/anchor-prototype-wave ~/.claude/skills/anchor-prototype-wave
 ```
 
-### Option B — install globally for all your Claude Code sessions
+Then invoke it conversationally, giving it an anchor and a page list. The two Python scripts are also directly runnable — for example, to validate a single surface:
 
 ```bash
-# Linux / macOS
-git clone https://github.com/SensLiao/anchor-prototype-wave.git \
-  ~/.claude/skills/anchor-prototype-wave
+python validate_surface.py <surface-dir>
 ```
 
-```powershell
-# Windows PowerShell
-git clone https://github.com/SensLiao/anchor-prototype-wave.git `
-  $HOME\.claude\skills\anchor-prototype-wave
-```
+## 📌 Project status
 
-### Required companion skills
+**v3.0.0, stable.**
 
-| Skill | Why |
-|---|---|
-| `codex-dispatch` | Stage 9 cross-AI review (Codex CLI invocation) |
+## 📄 License
 
-### Strongly recommended companion skills
+Released under the MIT License — see [`LICENSE`](LICENSE).
 
-| Skill | Why |
-|---|---|
-| `ux-principles` | Stage 0/5/7 — anchor laws, tactical numbers, NN10 + Built-for-Mars audit |
-| `taste-skill` | Anti-AI-slop tokens + single-page craft rules across the pipeline |
-
-### Optional companion skills
-
-`prototyping-ui-directions`, `ai-regression-testing`,
-`luxury-editorial-site-builder`, `grill-with-docs` —
-see [references/skills-dependencies.md](references/skills-dependencies.md) for
-when each one improves which stage.
-
----
-
-## Usage
-
-In a Claude Code session with this skill installed:
-
-```
-> Run anchor-prototype-wave. Anchor: <paste anchor doc>.
-> Pages: <list of 5-15 surfaces with slug/title/route/intent/group/status/risk>.
-> Output dir: ui-lab/2026-05-24-my-anchor-prototypes/
-```
-
-The skill will:
-1. Validate inputs (ask if anything is missing)
-2. Run the full pipeline silently (no per-stage checkpoints)
-3. Report back: surface count, PASS / FIX / REDO / ESCALATE breakdown,
-   master gallery URL, and any `ESCALATE_HUMAN` surfaces for you to triage
-
-The only times it stops to ask:
-
-- Inputs are incomplete / ambiguous
-- A surface fails 3 fix retries (`ESCALATE_HUMAN`)
-- You ask it to modify itself (writes to `.claude/skills/anchor-prototype-wave/**`)
-
----
-
-## Layout
-
-```
-SKILL.md                          ← full spec (read this)
-CHANGELOG.md                      ← version history (v3.0.0 collapsed v2.1's 4 modes)
-README.md                         ← this file
-LICENSE                           ← MIT
-references/
-  master-gallery-structure.md     ← Stage 11 locked layout
-  skills-dependencies.md          ← per-stage external skill consumption
-  surface-taxonomy.md             ← 12 morphology types
-  gates.md                        ← 5 hard gates + 6 soft scores
-  scoring-rubric.md               ← weights, floors, verdicts, maturity-aware
-  failure-patterns.md             ← regression cases (expandable by closeout)
-  model-policy.md                 ← env-var driven, no hardcoded models
-  output-schema.md                ← JSON schemas + examples
-scripts/
-  validate_surface.py             ← deterministic checks, stdlib only
-  score_audit_json.py             ← composite + maturity floor + verdict
-ASSETS/
-  anchor-doc-template.md
-  codex-review-prompt.md
-  element-prompt-template.md
-  master-gallery-template.html
-  orchestration-decision-matrix.md
-  planning-doc-template.md
-  quality-gate-checklist.md
-  shared-context-template.md
-  surface-prompt-template.md
-  vault-sync-template.md
-  writeup-template.md
-examples/
-  2026-05-12-track-b-v2-wave.md   ← pilot example
-  template-blank-project.md       ← blank shape for a new project
-```
-
----
-
-## License
-
-[MIT](LICENSE) © 2026 Ruixuan Liao
-
----
-
-## Contributing
-
-Issues and PRs welcome. For non-trivial changes, open an issue first so we
-can align on scope.
-
-When proposing a change to the pipeline (stages, gates, verdict rules,
-parallelism), include:
-- the failure pattern or use case driving the change,
-- which `references/*.md` and/or `scripts/*.py` would be touched,
-- a backwards-compatibility note for users on v3.x.
+<p align="center"><sub>Built by <a href="https://github.com/SensLiao">Ruixuan "Sens" Liao</a> · USYD Advanced Computing (Honours)</sub></p>
