@@ -1,19 +1,6 @@
 <div align="right"><a href="README.md">English</a></div>
 
-<p align="center"><img src="docs/hero.png" alt="anchor-prototype-wave banner" width="100%"></p>
-
-<p align="center"><b>锁定一个视觉锚点，并行铺开多张高保真页面，并逐张把关。</b></p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Claude_Code-Skill-f472b6?style=flat-square" alt="Claude Code Skill">
-  <img src="https://img.shields.io/badge/version-3.0.0-f472b6?style=flat-square" alt="Version 3.0.0">
-  <img src="https://img.shields.io/badge/status-stable-f472b6?style=flat-square" alt="Status: stable">
-  <img src="https://img.shields.io/badge/pipeline-14_stages-f472b6?style=flat-square" alt="14-stage pipeline">
-  <img src="https://img.shields.io/badge/Python-3-3776ab?style=flat-square" alt="Python 3">
-  <img src="https://img.shields.io/badge/License-MIT-2dd4bf?style=flat-square" alt="License: MIT">
-</p>
-
-## 概述
+<p align="center"><img src="docs/hero.png" alt="anchor-prototype-wave — one locked anchor, a whole wave of gated high-fidelity pages" width="100%"></p>
 
 `anchor-prototype-wave` 是一个 Claude Code skill，它把一个锁定的视觉锚点加上一份页面清单，在单次运行中产出一整波高保真 HTML 原型。它会并行铺开逐个 surface 的子代理（subagent），再用确定性校验器、一个 LLM 评分器以及跨模型（Codex）复审对每个 surface 把关——在汇总成一份总画廊（master gallery）之前，先对失败项进行重试。它面向那些需要大量页面、且这些页面都要忠实于同一个参考的设计师与工程师，免去逐张检查漂移或残留样板代码的工作。
 
@@ -33,16 +20,20 @@
 - **跨模型复审**覆盖全部失败项，外加对通过项的 15% 抽样，完全与具体模型无关——具体模型由环境变量选择。
 - **12 种 surface 形态类型与 10 条枚举的反模式（anti-pattern）**，为评分词汇提供锚定，并捕捉 scaffold leak。
 
-## 🏗 工作原理
+## 🏗 架构
+
+<p align="center"><img src="docs/architecture.png" alt="anchor-prototype-wave architecture — locked anchor fans out to parallel surfaces, each passing three validation gates before the gallery" width="100%"></p>
+
+<p align="center"><sub>一个锚点、N 个并行 surface、三层把关，以及一条在进入画廊之前的修复回路。</sub></p>
 
 整波原型作为一条确定性流程运行：
 
 1. **锁定锚点**，并把页面清单展开为一个个独立的 surface。
 2. **铺开**并行的逐 surface 子代理（以 ≤10 为一批，超出则自动拆分）。
-3. **校验**每个 surface，通过 9 项确定性检查，聚合成 5 道硬性闸门。
-4. **评分**6 个带权重的软性维度，配随成熟度调整的下限，产出四种判定之一。
-5. **失败即修复**，每个 surface 最多重试 3 次。
-6. **跨模型复审**每个失败项，外加对通过项的 15% 抽样。
+3. **校验**每个 surface，通过 9 项确定性检查，聚合成 5 道硬性闸门——这是不涉及模型的客观下限。
+4. **评分** 6 个带权重的软性维度，配随成熟度调整的下限；并用 Codex 做跨模型复审，覆盖全部失败项，外加对通过项的 15% 抽样。
+5. **给出判定**——`PASS_9PLUS`、`FIX_NEEDED`、`REDO` 或 `ESCALATE_HUMAN`。
+6. **失败即修复**：`FIX_NEEDED` 与 `REDO` 会把该 surface 送回循环，最多重试 3 次，让页面在原地被修复，而不是被悄悄放行。
 7. **汇总**存活下来的 surface，形成一份总画廊。
 
 ## 🔗 与 prototyping-ui-directions 的配合
@@ -51,13 +42,15 @@
 
 ## 🧰 技术栈
 
-- **Skill 规范**——单个 Markdown skill 定义。
-- **脚本**——两个 Python 3 标准库脚本（约 640 行，无第三方依赖）。
-- **配套 skill**——`codex-dispatch`（用于跨模型复审）。
+| 层次 | 选择 |
+| --- | --- |
+| Skill 规范 | 单个 Markdown skill 定义 |
+| 脚本 | 两个 Python 3 标准库脚本（约 640 行，无第三方依赖） |
+| 配套 skill | `codex-dispatch`，用于跨模型复审 |
 
 ## 🚀 快速上手
 
-将该 skill 安装到单个项目，或全局安装以供所有项目使用：
+前置条件：Claude Code 与 Python 3。将该 skill 安装到单个项目，或全局安装以供所有项目使用：
 
 ```bash
 # 项目级安装
@@ -72,10 +65,6 @@ git clone https://github.com/SensLiao/anchor-prototype-wave ~/.claude/skills/anc
 ```bash
 python validate_surface.py <surface-dir>
 ```
-
-## 📌 项目状态
-
-**v3.0.0，稳定版（stable）。**
 
 ## 📄 许可证
 
