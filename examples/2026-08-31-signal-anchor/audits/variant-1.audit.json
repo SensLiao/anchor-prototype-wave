@@ -1,0 +1,84 @@
+{
+  "$schema": "anchor-wave/v2.1/surface-audit",
+  "wave_slug": "agent-run-canvas",
+  "surface_slug": "variant-1",
+  "contract_ref": null,
+  "deterministic_validators": {
+    "scaffold_leak": {
+      "status": "PASS",
+      "matches": []
+    },
+    "decorative_gradient": {
+      "status": "BLOCK",
+      "matches": [
+        {
+          "selector": "body",
+          "gradient": "linear-gradient(to right, var(--color-grid-minor)",
+          "line": 17
+        }
+      ]
+    },
+    "pill_mono_drift": {
+      "status": "PASS",
+      "matches": []
+    },
+    "stale_tab_label": {
+      "status": "PASS",
+      "matches": []
+    },
+    "surface_morphology": {
+      "status": "PASS",
+      "matches": [],
+      "sub_cause": "none"
+    },
+    "accessibility_minimum": {
+      "status": "PASS",
+      "matches": []
+    },
+    "production_source_grounding": {
+      "status": "WARN",
+      "matches": [
+        {
+          "issue": "no contract supplied; cannot verify grounding"
+        }
+      ]
+    },
+    "forbidden_write_path": {
+      "status": "PASS",
+      "matches": []
+    },
+    "output_schema_validity": {
+      "status": "PASS",
+      "matches": []
+    }
+  },
+  "hard_gates": {
+    "gate_0_intent_alignment": "PASS",
+    "gate_0_sub_cause": "none",
+    "gate_1_production_source_grounding": "WARN",
+    "gate_2_boundary_compliance": "PASS",
+    "gate_3_no_scaffold_leak": "BLOCK",
+    "gate_4_accessibility_minimum": "PASS"
+  },
+  "soft_scores": null,
+  "min_floor_check": null,
+  "weighted_score": null,
+  "verdict": "FIX_NEEDED",
+  "verdict_reason": "Hard gate BLOCK (surgically patchable)",
+  "evidence_selectors": [
+    {
+      "validator": "decorative_gradient",
+      "selector": "body",
+      "gradient": "linear-gradient(to right, var(--color-grid-minor)",
+      "line": 17
+    }
+  ],
+  "retry_instruction": null,
+  "models_used": {
+    "surface_author": null,
+    "audit_grader": null,
+    "cross_review": null,
+    "fallback_triggered": false
+  },
+  "graded_at": "2026-08-31T07:16:18+00:00"
+}

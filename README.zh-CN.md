@@ -154,6 +154,22 @@ python scripts/score_audit_json.py <surface-dir>/_audit.json --quality-bar 9.0
 
 `validate_surface.py` 把完整审计 JSON 写在页面旁边，并向 stdout 打印紧凑摘要——`surface`、`verdict`、`hard_gates`、`blocking_validators`、`warning_validators`、`audit_path`。注意：**裁决为失败时退出码仍是 0**（退出码 2 只表示目录或 `index.html` 缺失），所以 CI 包装应解析 stdout JSON 里的 `verdict` 字段而非退出码。`score_audit_json.py` 接受 `--weights <weights.json>` 重设六维权重（必须加和为 1.0）。
 
+## 🖼 一次真实审计，已随仓库提交
+
+[`examples/2026-08-31-signal-anchor/`](examples/2026-08-31-signal-anchor/) 真实地跑了本 skill 两个可执行的部分：用真实 anchor 填好的 master gallery，以及对上游 skill [`prototyping-ui-directions`](https://github.com/SensLiao/prototyping-ui-directions) 产出的三个 surface 真正执行 `validate_surface.py`。
+
+<p align="center"><img src="docs/example-gallery.png" alt="用 Signal anchor 渲染出的 master gallery：anchor 版本栈、统计条、基础元件与 surface 原型卡片，全部落在深色仪表盘 chassis 上" width="100%"></p>
+
+<p align="center"><sub><code>ASSETS/master-gallery-template.html</code> 的 74 个占位符全部由锁定的 Signal chassis 填充——<code>Inter</code>/<code>JetBrains&nbsp;Mono</code>、6px 圆角、发丝边框、唯一强调色 <code>oklch(0.78 0.16 190)</code>。这张画廊本身就是用它所展示的那套 anchor 建的，这正是在任何单个 surface 被提拔之前、在集合规模上验证 chassis 的方式。</sub></p>
+
+<p align="center"><img src="docs/example-audit.png" alt="validate_surface.py 对三个 surface 的终端输出：两个返回 PENDING_SOFT_SCORE 且硬门禁全过，一个返回 FIX_NEEDED 并在 decorative_gradient 上 BLOCK" width="100%"></p>
+
+<p align="center"><sub>真实输出。三个 surface 受审，两个全 PASS，一个 BLOCK——而那个 BLOCK 才是有意思的地方。</sub></p>
+
+**校验器报了个误判，而这个误判被原样保留了下来。** `variant-1` 被 `decorative_gradient` 拦下，命中的是 `{"selector": "body", "gradient": "linear-gradient(to right, var(--color-grid-minor)", "line": 17}`——但那根本不是装饰，而是**1px 的绘图网格**，正是那个方向全部的视觉前提。所以这条结论是关于**规则**而不是关于页面的：`check_decorative_gradient` 目前还分不清发丝网格与渐变色块。它被[记录在示例里](examples/2026-08-31-signal-anchor/)，连同显而易见的改法（豁免色标间距 ≤2px 的渐变），而不是悄悄改掉——因为凭一个样本就放宽门禁，正是门禁失去意义的开始。
+
+**管线的另一半是刻意没跑的。** `score_audit_json.py` 是在 LLM 评分器补齐六个软维度**之后**才套用 §4 判定规则的。这里没有跑评分器，所以所有软分为 null、画廊里每个评分格都显示 `—`、`AVG SELF-GRADE` 显示 `—/10` 而不是一个编出来的数字。那两个 surface 拿到的 `PENDING_SOFT_SCORE`，含义正好就是这个。
+
 ## 🎛 模型配置
 
 任何地方都没有硬编码模型名。所有路由来自六个环境变量（默认值见 [`references/model-policy.md`](references/model-policy.md)）：
@@ -173,6 +189,7 @@ python scripts/score_audit_json.py <surface-dir>/_audit.json --quality-bar 9.0
 | --- | --- |
 | [`SKILL.md`](SKILL.md) | 完整管线定义——阶段、停止规则、触发矩阵、反模式。 |
 | [`scripts/`](scripts/) | `validate_surface.py`（439 行）+ `score_audit_json.py`（203 行）——仅标准库。 |
+| [`examples/`](examples/) | 一张真实填充的 master gallery，以及一次真实校验运行留下的三份 `SurfaceAudit` 文档。 |
 | [`references/`](references/) | 规则手册：[`gates.md`](references/gates.md)、[`scoring-rubric.md`](references/scoring-rubric.md)、[`surface-taxonomy.md`](references/surface-taxonomy.md)（12 种形态）、[`failure-patterns.md`](references/failure-patterns.md)（回归案例）、[`model-policy.md`](references/model-policy.md)、[`output-schema.md`](references/output-schema.md)（4 个 JSON schema）、[`master-gallery-structure.md`](references/master-gallery-structure.md)、[`skills-dependencies.md`](references/skills-dependencies.md)。 |
 | [`ASSETS/`](ASSETS/) | 11 份可填写模板：anchor 声明、共享上下文、surface/element 提示词、Codex 复审提示词、画廊 HTML、质量门禁清单、writeup。 |
 | [`examples/`](examples/) | 试点运行记录与空白项目模板。 |
@@ -193,7 +210,7 @@ python scripts/score_audit_json.py <surface-dir>/_audit.json --quality-bar 9.0
 
 ## 📊 项目状态
 
-skill 处于**稳定、经试点批准**的状态——当前 v3.0.0 把早期的 flag/模式界面收敛成纯对话式，同时保留了 v2.1 的全部校验机制（旧的带 flag 提示词仍被理解，flag 被直接忽略）。确定性校验器、门禁、计分、重试回路与跨模型触发矩阵是经过批准的核心。两点诚实的说明：本仓库不附带示例 wave（产物留在运行它的项目里）；边界合规门禁由编排层执行，而非独立校验脚本。
+skill 处于**稳定、经试点批准**的状态——当前 v3.0.0 把早期的 flag/模式界面收敛成纯对话式，同时保留了 v2.1 的全部校验机制（旧的带 flag 提示词仍被理解，flag 被直接忽略）。确定性校验器、门禁、计分、重试回路与跨模型触发矩阵是经过批准的核心。两点诚实的说明。边界合规门禁由编排层执行，而非独立校验脚本。另外，虽然 [`examples/2026-08-31-signal-anchor/`](examples/2026-08-31-signal-anchor/) 现在附带了一张真实填充的画廊和三份真实审计，但它**不是一次完整的 wave**——没有 LLM 评分环节、没有重试回路、没有跨模型评审；完整 wave 的产物仍然留在运行它的项目里。
 
 ## 📄 许可证
 

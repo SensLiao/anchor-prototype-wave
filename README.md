@@ -154,6 +154,34 @@ python scripts/score_audit_json.py <surface-dir>/_audit.json --quality-bar 9.0
 
 `validate_surface.py` writes the full audit JSON next to the page and prints a compact summary — `surface`, `verdict`, `hard_gates`, `blocking_validators`, `warning_validators`, `audit_path` — to stdout. Note that **a failing verdict still exits 0** (exit 2 is reserved for a missing directory/`index.html`), so a CI wrapper should parse the stdout JSON's `verdict` field rather than the exit code. `score_audit_json.py` accepts `--weights <weights.json>` to re-weight the six dimensions (must sum to 1.0).
 
+## 🖼 A real audit, committed
+
+[`examples/2026-08-31-signal-anchor/`](examples/2026-08-31-signal-anchor/) exercises the two runnable
+pieces of this skill for real: the master gallery filled from a genuine anchor, and
+`validate_surface.py` run against three surfaces produced by the upstream skill,
+[`prototyping-ui-directions`](https://github.com/SensLiao/prototyping-ui-directions).
+
+<p align="center"><img src="docs/example-gallery.png" alt="The master gallery rendered with the Signal anchor: anchor version stack, stats strip, foundation elements and surface prototype cards, all on the dark instrument chassis" width="100%"></p>
+
+<p align="center"><sub><code>ASSETS/master-gallery-template.html</code> with all 74 placeholders filled from the locked Signal chassis — <code>Inter</code>/<code>JetBrains&nbsp;Mono</code>, 6px radius, hairline borders, one accent at <code>oklch(0.78 0.16 190)</code>. The gallery is built <em>in</em> the anchor it is presenting, which is how the chassis gets proven at ensemble scale before any single surface is promoted.</sub></p>
+
+<p align="center"><img src="docs/example-audit.png" alt="Terminal output of validate_surface.py on three surfaces: two return PENDING_SOFT_SCORE with all hard gates passing, one returns FIX_NEEDED with a BLOCK on decorative_gradient" width="100%"></p>
+
+<p align="center"><sub>Real output. Three surfaces audited, two all-PASS, one BLOCK — and the BLOCK is the interesting part.</sub></p>
+
+**The validator flagged a false positive, and it stayed flagged.** `variant-1` was blocked by
+`decorative_gradient` on `{"selector": "body", "gradient": "linear-gradient(to right, var(--color-grid-minor)", "line": 17}`
+— which is not decoration at all, but a **1px drafting grid**, the entire visual premise of that
+direction. The finding is about the rule rather than the page: `check_decorative_gradient` cannot yet
+tell a hairline grid from a gradient blob. It is [recorded in the example](examples/2026-08-31-signal-anchor/)
+with the obvious refinement (exempt gradients whose stops sit ≤2px apart) rather than quietly
+patched, because loosening a gate on the strength of one sample is how gates stop meaning anything.
+
+**Half the pipeline deliberately did not run.** `score_audit_json.py` applies the §4 verdict rule
+*after* an LLM grader fills the six soft dimensions. No grader was run here, so every soft score is
+null, every grade cell in the gallery reads `—`, and `AVG SELF-GRADE` shows `—/10` instead of an
+invented number. `PENDING_SOFT_SCORE` is precisely what those two surfaces earned.
+
 ## 🎛 Model configuration
 
 No model name is hardcoded anywhere. All routing comes from six environment variables (defaults from [`references/model-policy.md`](references/model-policy.md)):
@@ -173,6 +201,7 @@ No model name is hardcoded anywhere. All routing comes from six environment vari
 | --- | --- |
 | [`SKILL.md`](SKILL.md) | The full pipeline definition — stages, stop rules, trigger matrix, anti-patterns. |
 | [`scripts/`](scripts/) | `validate_surface.py` (439 lines) + `score_audit_json.py` (203 lines) — stdlib-only. |
+| [`examples/`](examples/) | One real filled master gallery and three committed `SurfaceAudit` documents from an actual validator run. |
 | [`references/`](references/) | The rulebook: [`gates.md`](references/gates.md), [`scoring-rubric.md`](references/scoring-rubric.md), [`surface-taxonomy.md`](references/surface-taxonomy.md) (12 morphologies), [`failure-patterns.md`](references/failure-patterns.md) (regression cases), [`model-policy.md`](references/model-policy.md), [`output-schema.md`](references/output-schema.md) (4 JSON schemas), [`master-gallery-structure.md`](references/master-gallery-structure.md), [`skills-dependencies.md`](references/skills-dependencies.md). |
 | [`ASSETS/`](ASSETS/) | 11 fill-in templates: anchor declaration, shared context, surface/element prompts, Codex review prompt, gallery HTML, quality-gate checklist, writeups. |
 | [`examples/`](examples/) | The recorded pilot-run writeup and a blank project template. |
@@ -193,7 +222,7 @@ No model name is hardcoded anywhere. All routing comes from six environment vari
 
 ## 📊 Project status
 
-The skill is **stable and pilot-ratified** — the current v3.0.0 collapsed the earlier flag/mode surface into a purely conversational interface while keeping all v2.1 verification mechanics (old flag-style prompts are still understood; the flags are simply ignored). The deterministic validator, gates, scoring, retry loop, and cross-review trigger matrix are the ratified core. Two honest caveats: no example wave ships in this repository (outputs live in the projects that run it), and the boundary-compliance gate is enforced by the orchestrator rather than the standalone validator.
+The skill is **stable and pilot-ratified** — the current v3.0.0 collapsed the earlier flag/mode surface into a purely conversational interface while keeping all v2.1 verification mechanics (old flag-style prompts are still understood; the flags are simply ignored). The deterministic validator, gates, scoring, retry loop, and cross-review trigger matrix are the ratified core. Two honest caveats. The boundary-compliance gate is enforced by the orchestrator rather than the standalone validator. And while [`examples/2026-08-31-signal-anchor/`](examples/2026-08-31-signal-anchor/) now ships a real filled gallery plus three real audits, it is **not a full wave** — no LLM grading pass, no retry loop, no cross-review; a complete wave's outputs still live in the projects that run it.
 
 ## 📄 License
 

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Signal Prototypes · Tracewell · agent-run review</title>
+<!--
+  Master Gallery Template (anchor-prototype-wave skill)
+  ----------------------------------------------------
+  Replace placeholders: Signal, Tracewell · agent-run review, 2026-08-31,
+  oklch(0.78 0.16 190), Inter, JetBrains+Mono, stat values, surface cards,
+  footer links.
+
+  This gallery itself uses the anchor's visual chassis — proves the chassis
+  at ensemble scale before any single-surface promotion.
+-->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    /* Surface */
+    --page-bg: oklch(0.19 0.015 260);
+    --card-bg: oklch(0.245 0.018 260);
+    --sunken-bg: oklch(0.215 0.016 260);
+    --muted-bg: oklch(0.30 0.02 260);
+
+    /* Text */
+    --text-primary: oklch(0.95 0.008 250);
+    --text-secondary: oklch(0.68 0.015 255);
+    --text-tertiary: oklch(0.58 0.015 258);
+    --text-mono-label: oklch(0.68 0.015 255);
+
+    /* Border */
+    --border-hairline: oklch(0.34 0.02 260);
+    --border-strong: oklch(0.44 0.02 260);
+    --border-focus: oklch(0.78 0.16 190);
+
+    /* Accent (single mono) */
+    --accent: oklch(0.78 0.16 190);
+
+    /* Status (semantic, restrained) */
+    --status-amber: oklch(0.8 0.15 85);
+    --status-red: oklch(0.65 0.2 25);
+
+    /* Shadow */
+    --shadow-micro: 0 1px 2px rgba(23, 23, 23, 0.04);
+
+    /* Radius */
+    --radius-pill: 999px;
+    --radius-card: 6px;
+    --radius-chip: 2px;
+
+    /* Spacing */
+    --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+    --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+    --space-12: 48px;
+
+    /* Typography */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains+Mono', ui-monospace, SFMono-Regular, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    background: var(--page-bg);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    /* Optional dot-grid backdrop */
+    background-image: radial-gradient(circle, rgba(23,23,23,0.04) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  a { color: inherit; text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-mono-label);
+  }
+
+  .shell {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: var(--space-12) var(--space-8);
+  }
+
+  /* Anchor header */
+  .anchor-header {
+    margin-bottom: var(--space-10);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--border-hairline);
+  }
+  .breadcrumb {
+    display: flex; align-items: center; gap: var(--space-2);
+    font-size: 12px; color: var(--text-tertiary); margin-bottom: var(--space-4);
+  }
+  .breadcrumb a:hover { color: var(--text-primary); }
+  .breadcrumb-sep { color: var(--text-tertiary); }
+  .anchor-title {
+    font-size: 36px; font-weight: 600; letter-spacing: -0.02em;
+    color: var(--text-primary); margin: 0 0 var(--space-3) 0;
+  }
+  .anchor-subtitle {
+    font-size: 16px; color: var(--text-secondary);
+    margin: 0 0 var(--space-6) 0; max-width: 800px;
+  }
+
+  /* Version stack strip */
+  .version-stack {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3); margin-top: var(--space-6);
+  }
+  .v-tile {
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-card);
+    padding: var(--space-4) var(--space-5);
+    background: var(--card-bg);
+  }
+  .v-tile.v-active { border-color: var(--accent); }
+  .v-tile.v-future {
+    background: var(--sunken-bg);
+    border-style: dashed;
+    border-color: var(--border-strong);
+  }
+  .v-tile-version { font-size: 18px; font-weight: 600; margin-bottom: var(--space-1); }
+  .v-tile-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+  .v-tile-status {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em;
+    margin-top: var(--space-3); color: var(--text-tertiary);
+  }
+
+  /* Stats strip */
+  .stats-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-10);
+    padding: var(--space-5) var(--space-6);
+    background: var(--card-bg);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-card);
+  }
+  .stat-cell { display: flex; flex-direction: column; gap: var(--space-1); }
+  .stat-value {
+    font-family: var(--font-mono); font-size: 22px; font-weight: 600;
+    color: var(--text-primary); letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-label {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-tertiary);
+  }
+  .stat-sublabel { font-size: 11px; color: var(--text-tertiary); }
+
+  /* Section */
+  .section { margin-bottom: var(--space-12); }
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: var(--space-5); padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-hairline);
+  }
+  .section-title {
+    font-size: 20px; font-weight: 600; letter-spacing: -0.01em; margin: 0;
+    display: flex; align-items: center; gap: var(--space-3);
+  }
+  .section-title .meta {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-tertiary);
+  }
+  .section-desc { font-size: 13px; color: var(--text-secondary); max-width: 640px; }
+
+  /* Grid */
+  .card-grid { display: grid; gap: var(--space-4); }
+  .card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 1024px) {
+    .card-grid.cols-3 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 720px) {
+    .card-grid.cols-2, .card-grid.cols-3 { grid-template-columns: 1fr; }
+  }
+
+  /* Prototype card */
+  .proto-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-card);
+    padding: var(--space-5);
+    transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+    display: flex; flex-direction: column; gap: var(--space-3);
+    position: relative; overflow: hidden;
+  }
+  .proto-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-micro);
+  }
+  .proto-card.is-creative::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 2px; background: var(--accent);
+  }
+  .proto-card.is-mature::before {
+    content: ''; position: absolute; top: 0; left: 0; bottom: 0;
+    width: 2px; background: var(--accent); opacity: 0.4;
+  }
+  .proto-card.is-marquee {
+    grid-column: 1 / -1;
+    border: 1px solid var(--accent);
+  }
+  .proto-card.is-marquee::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--accent);
+  }
+
+  .pc-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: var(--space-3);
+  }
+  .pc-id {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+    letter-spacing: 0.08em; color: var(--text-mono-label);
+  }
+  .pc-mode-pill {
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-pill); padding: 2px 8px;
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em;
+    color: var(--text-tertiary); background: var(--sunken-bg);
+    white-space: nowrap;
+  }
+  .pc-mode-pill.creative {
+    border-color: var(--accent); color: var(--accent);
+    background: var(--card-bg); font-weight: 500;
+  }
+  .pc-title {
+    font-size: 16px; font-weight: 600; margin: 0; line-height: 1.3;
+    color: var(--text-primary);
+  }
+  .pc-route {
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--text-tertiary); margin: 0;
+  }
+  .pc-desc {
+    font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin: 0;
+  }
+  .pc-grades {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-1);
+    padding: var(--space-3) 0 var(--space-2);
+    border-top: 1px dashed var(--border-hairline); margin-top: var(--space-1);
+  }
+  .grade-cell { text-align: center; }
+  .grade-num {
+    font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+    color: var(--text-primary);
+  }
+  .grade-label {
+    font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--text-tertiary);
+    margin-top: 2px; line-height: 1.2;
+  }
+  .pc-actions { display: flex; gap: var(--space-2); margin-top: var(--space-3); }
+  .btn {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    padding: 6px 12px;
+    border-radius: var(--radius-chip);
+    border: 1px solid var(--border-hairline);
+    background: var(--card-bg); color: var(--text-primary);
+    font-family: var(--font-sans); font-size: 12px; font-weight: 500;
+    cursor: pointer; text-decoration: none;
+    transition: background 120ms ease, border-color 120ms ease;
+  }
+  .btn:hover { background: var(--muted-bg); border-color: var(--border-strong); text-decoration: none; }
+  .btn.primary { background: var(--accent); color: #ffffff; border-color: var(--accent); }
+  .btn.primary:hover { background: rgba(23, 23, 23, 0.88); }
+
+  /* Footer */
+  .anchor-footer {
+    margin-top: var(--space-12); padding-top: var(--space-6);
+    border-top: 1px solid var(--border-hairline);
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--space-6); font-size: 12px; color: var(--text-secondary);
+  }
+  .footer-col h4 {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-mono-label);
+    margin: 0 0 var(--space-3) 0;
+  }
+  .footer-col ul { list-style: none; margin: 0; padding: 0; }
+  .footer-col li { margin-bottom: var(--space-2); line-height: 1.5; }
+  .footer-col a { color: var(--text-secondary); }
+  .footer-col a:hover { color: var(--text-primary); }
+  .footer-disclaimer {
+    margin-top: var(--space-8); padding-top: var(--space-4);
+    border-top: 1px dashed var(--border-hairline);
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.04em;
+    color: var(--text-tertiary); text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .proto-card { transition: none; }
+    .proto-card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<main class="shell">
+
+  <!-- ============ Anchor header ============ -->
+  <header class="anchor-header">
+    <nav class="breadcrumb">
+      <span>Tracewell · agent-run review</span>
+      <span class="breadcrumb-sep">›</span>
+      <span>SensLiao</span>
+      <span class="breadcrumb-sep">›</span>
+      <span>Signal</span>
+      <span class="breadcrumb-sep">›</span>
+      <span style="color:var(--text-primary)">Prototype Gallery</span>
+    </nav>
+
+    <h1 class="anchor-title">Signal Prototype Gallery</h1>
+    <p class="anchor-subtitle">
+      A dark instrument chassis for reading finished agent runs: neutral chrome, hue reserved for run status, one cyan accent spent only on the traced critical path. Locked as the visual anchor from direction C of the upstream prototyping-ui-directions run, then applied across three surfaces. Every surface here was checked by scripts/validate_surface.py; the deterministic gates are real results, the soft grades are deliberately ungraded.
+      All mocks built against the Signal chassis (Inter /
+      radius 6px / hairline borders / single mono accent
+      <code style="font-family:var(--font-mono)">oklch(0.78 0.16 190)</code> / no
+      glass / no aurora / no glow), aligned to MVP function inventory.
+      This gallery is the entry point for visual review before Gate 12.
+    </p>
+
+    <!-- v1 / v2 / v3 stack -->
+    <div class="version-stack">
+      <div class="v-tile">
+        <div class="mono-label">Tier 0 · Production</div>
+        <div class="v-tile-version">v1</div>
+        <div class="v-tile-desc">Direction C accepted from the upstream run — palette, type and motion budget locked.</div>
+        <div class="v-tile-status">LIVE</div>
+      </div>
+      <div class="v-tile v-active">
+        <div class="mono-label">Tier 1 · Anchor</div>
+        <div class="v-tile-version">v2</div>
+        <div class="v-tile-desc">Lane grid and pinned-rail rules added after the timeline surface exposed them.</div>
+        <div class="v-tile-status">ANCHORED 2026-08-31</div>
+      </div>
+      <div class="v-tile v-future">
+        <div class="mono-label">Tier 2-4 · Future</div>
+        <div class="v-tile-version">v3</div>
+        <div class="v-tile-desc">Pending: contract file, so gate 1 stops reporting WARN on every surface.</div>
+        <div class="v-tile-status">not scheduled</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ Stats strip ============ -->
+  <div class="stats-strip">
+    <div class="stat-cell">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Prototypes</div>
+      <div class="stat-sublabel">1 marquee · 2 creative</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-value">1,236</div>
+      <div class="stat-label">HTML Lines</div>
+      <div class="stat-sublabel">self-contained · 0 runtime deps</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Mode Variants</div>
+      <div class="stat-sublabel">row · band · tick</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-value">— / 10</div>
+      <div class="stat-label">Avg Self-Grade</div>
+      <div class="stat-sublabel">Soft scores are ungraded on purpose. validate_surface.py returns the deterministic half of the verdict; the six soft dimensions are filled by an LLM grader that was not run here, so every grade cell reads — and score_audit_json.py was not applied. Numbers that were not measured are not shown.</div>
+    </div>
+  </div>
+
+  <!-- ============ Foundation Elements section ============ -->
+  <section class="section">
+    <header class="section-head">
+      <h2 class="section-title">
+        Foundation Elements
+        <span class="meta">Stage 2.1 · 12 elements</span>
+      </h2>
+      <span class="mono-label">research-only · element-contract-index v1</span>
+    </header>
+    <p class="section-desc" style="margin-bottom:var(--space-5)">
+      Atomic and structural elements rendered with full state matrices against
+      the Signal chassis. Mature foundation — innovation factor 5-7.
+    </p>
+
+    <div class="card-grid cols-2">
+      <!-- Repeat per element: -->
+      <article class="proto-card is-mature">
+        <div class="pc-head">
+          <span class="pc-id">ELEMENT · 01</span>
+          <span class="pc-mode-pill">foundation</span>
+        </div>
+        <h3 class="pc-title">Status chip</h3>
+        <p class="pc-route">assets/tokens.css · 105 lines</p>
+        <p class="pc-desc">Glyph plus word plus hue, never hue alone. Contrast measured against bg-raised rather than bg-base, because that is the surface the label actually sits on.</p>
+        <div class="pc-grades">
+          <div class="grade-cell"><div class="grade-num">—</div><div class="grade-label">Chassis</div></div>
+          <div class="grade-cell"><div class="grade-num">—</div><div class="grade-label">MVP</div></div>
+          <div class="grade-cell"><div class="grade-num">—</div><div class="grade-label">Mode</div></div>
+          <div class="grade-cell"><div class="grade-num">—</div><div class="grade-label">Laws UX</div></div>
+          <div class="grade-cell"><div class="grade-num">—</div><div class="grade-label">Innov.</div></div>
+        </div>
+        <div class="pc-actions">
+          <a class="btn primary" href="palette.html">Open Prototype →</a>
+          <a class="btn" href="readme.md">Writeup</a>
+        </div>
+      </article>
+      <!-- /per element -->
+    </div>
+  </section>
+
+  <!-- ============ Surface Prototypes section ============ -->
+  <section class="section">
+    <header class="section-head">
+      <h2 class="section-title">
+        Surface Prototypes
+        <span class="meta">Stage 3 · 3 surfaces · 1 marquee</span>
+      </h2>
+      <span class="mono-label">hi-fi · awaiting Gate 12</span>
+    </header>
+
+    <div class="card-grid cols-3">
+      <!-- Marquee surface (full-width) -->
+      <article class="proto-card is-marquee">
+        <div class="pc-head">
+          <span class="pc-id">SURFACE · MARQUEE</span>
+          <span class="pc-mode-pill creative">Critical-path trace</span>
+        </div>
+        <h3 class="pc-title">Run timeline</h3>
+        <p class="pc-route">prototypes/variant-3/surface-canvas.html · 105 lines</p>
+        <p class="pc-desc">Six worker lanes across 38 minutes of wall clock, rankdir LR with the longest-path ranker. The traced critical path is the only ambient motion in the package and it is bound to a control the user can press. Validator: all five hard gates PASS, verdict PENDING_SOFT_SCORE.</p>
+        <div class="pc-grades">
+          <div class="grade-cell"><div class="grade-num">—</div><div class="grade-label">Chassis</div></div>
+          <div class="grade-cell"><div class="grade-num">—</div><div class="grade-label">MVP</div></div>
+          <div class="grade-cell"><div class="grade-num">—</div><div class="grade-label">Mode</div></div>
+          <div class="grade-cell"><div class="grade-num">—</div><div class="grade-label">Laws UX</div></div>
+          <div class="grade-cell"><div class="grade-num">—</div><div class="grade-label">Innov.</div></div>
+        </div>
+        <div class="pc-actions">
+          <a class="btn primary" href="prototypes/variant-3/surface-canvas.html">Open Prototype →</a>
+          <a class="btn" href="prototypes/variant-3/readme.md">Writeup</a>
+        </div>
+      </article>
+
+      <!-- Creative surfaces (top-border 2px accent) -->
+      <article class="proto-card is-creative">
+        <!-- repeat structure: pc-head / pc-title / pc-route / pc-desc / pc-grades / pc-actions -->
+      </article>
+
+      <!-- Mature surfaces (left-border 2px 40% accent) -->
+      <article class="proto-card is-mature">
+        <!-- repeat structure -->
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ Cross-AI Review section ============ -->
+  <section class="section">
+    <header class="section-head">
+      <h2 class="section-title">
+        Cross-AI Review
+        <span class="meta">Codex CLI · GPT-5 · 2026-08-31</span>
+      </h2>
+      <span class="mono-label">outside red team · 3 surfaces reviewed</span>
+    </header>
+    <p class="section-desc" style="margin-bottom:var(--space-5)">
+      Cross-AI red team review by Codex CLI on 2026-08-31. Not a restatement of
+      Claude's self-grade — outside critique with specific DOM patterns,
+      frontier product references, and top 3 priority recommendations across
+      all surfaces. Used as input for Stage 4 visual composition pkg.
+    </p>
+    <div class="card-grid cols-2">
+      <article class="proto-card is-mature">
+        <div class="pc-head">
+          <span class="pc-id">REVIEW · CODEX</span>
+          <span class="pc-mode-pill">cross-ai</span>
+        </div>
+        <h3 class="pc-title">Deterministic audit — validate_surface.py v2.1.0</h3>
+        <p class="pc-route">examples/2026-08-31-signal-anchor/audits/ · 105 lines</p>
+        <p class="pc-desc">Three surfaces audited. Two returned all-PASS hard gates. One returned BLOCK on decorative_gradient — a linear-gradient on body, which is in fact the 1px drafting grid of a different direction, not a decorative wash. Recorded as a validator limitation rather than patched away: the rule cannot currently tell a hairline grid from a gradient blob.</p>
+        <div class="pc-actions">
+          <a class="btn primary" href="examples/2026-08-31-signal-anchor/audits/">Open Review →</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ Footer ============ -->
+  <footer class="anchor-footer">
+    <div class="footer-col">
+      <h4>Anchor Docs</h4>
+      <ul>
+        <li><a href="ASSETS/anchor-doc-template.md">Signal Anchor</a></li>
+        <li><a href="ASSETS/writeup-template.md">Visual Chassis Writeup</a></li>
+        <li><a href="references/output-schema.md">v3 Strategic Amendment</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Roadmap & Strategy</h4>
+      <ul>
+        <li><a href="CHANGELOG.md">Master Roadmap</a></li>
+        <li><a href="ASSETS/quality-gate-checklist.md">12-Gate Quality Audit</a></li>
+        <li><a href="references/surface-taxonomy.md">Boundary Rules</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Semantic zoom tier</h4>
+      <ul>
+        <li><a href="surface-canvas.html#row">Row</a></li>
+        <li><a href="surface-canvas.html#band">Band</a></li>
+        <li><a href="surface-canvas.html#tick">Tick</a></li>
+        <li><a href="surface-canvas.html#trace">Critical-path trace (PREMIUM)</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <p class="footer-disclaimer">
+    Signal anchor status ≠ production merge. Gate 12 (user approval)
+    is the only merge channel. This gallery is research output.
+  </p>
+
+</main>
+
+</body>
+</html>
