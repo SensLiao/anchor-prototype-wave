@@ -72,7 +72,8 @@ The run has three phases. **Contracts first**: the anchor is written down as a d
 
 ## 🚦 Quality gates
 
-<!-- image-slot: docs/gates.png — the gate funnel: 9 deterministic checks → 5 hard gates → 6 weighted soft dimensions → 4 verdicts, with the ≤3-retry repair loop -->
+<p align="center"><img src="docs/gates.png" alt="The gating funnel: nine deterministic checks feed five hard gates, then six weighted soft dimensions resolve to four verdicts, with a retry loop back to the start" width="100%"></p>
+<p align="center"><sub>The funnel every surface passes: a deterministic floor, then weighted scoring with maturity-aware floors, then a verdict — and failures loop back carrying their evidence.</sub></p>
 
 **Hard gates** — the deterministic floor. The validator's 9 checks aggregate into 5 gates; any `BLOCK` fails the surface regardless of how well it scores elsewhere (treating a high average as an override is anti-pattern A1):
 
